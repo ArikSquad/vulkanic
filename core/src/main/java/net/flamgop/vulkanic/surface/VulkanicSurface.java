@@ -10,9 +10,8 @@ public class VulkanicSurface implements AutoCloseable {
     private final VulkanicInstance instance;
     private final long handle;
 
-    /// @apiNote This is only implemented in the base library for GLFW, it is completely reasonable behavior to create your own surface.
-    /// @see VulkanicInstance#createGlfwWindowSurface
-    @ApiStatus.Internal
+    /// @param instance the [VulkanicInstance] that created this surface
+    /// @param handle the Vulkan handle of this surface
     public VulkanicSurface(VulkanicInstance instance, long handle) {
         this.instance = instance;
         this.handle = handle;

@@ -4,18 +4,15 @@ import net.flamgop.vulkanic.core.debug.VulkanicDebugCallbackData;
 import net.flamgop.vulkanic.core.debug.VulkanicDebugLabel;
 import net.flamgop.vulkanic.core.debug.VulkanicDebugMessenger;
 import net.flamgop.vulkanic.core.debug.VulkanicDebugObjectNameInfo;
-import net.flamgop.vulkanic.surface.VulkanicSurface;
 import net.flamgop.vulkanic.util.EnumIntBitset;
 import net.flamgop.vulkanic.util.VkUtil;
 import org.jetbrains.annotations.*;
 import org.joml.Vector4f;
 import org.lwjgl.PointerBuffer;
-import org.lwjgl.glfw.GLFWVulkan;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.vulkan.*;
 
 import java.nio.IntBuffer;
-import java.nio.LongBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -149,14 +146,6 @@ public class VulkanicInstance implements AutoCloseable {
                 physicalDevices.add(new VulkanicPhysicalDevice(this.handle, pDevices.get(i)));
             }
             return physicalDevices;
-        }
-    }
-
-    public @NotNull VulkanicSurface createGlfwWindowSurface(long windowHandle) {
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            LongBuffer pSurface = stack.callocLong(1);
-            VkUtil.check(GLFWVulkan.glfwCreateWindowSurface(this.handle, windowHandle, null, pSurface));
-            return new VulkanicSurface(this, pSurface.get(0));
         }
     }
 
