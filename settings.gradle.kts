@@ -1,7 +1,8 @@
 rootProject.name = "vulkanic"
 
 include("core")
-include("helpers")
+include("helpers:glfw")
+include("helpers:sdl")
 
 dependencyResolutionManagement {
     versionCatalogs {

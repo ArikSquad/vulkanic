@@ -4,6 +4,7 @@ import net.flamgop.vulkanic.core.debug.VulkanicDebugCallbackData;
 import net.flamgop.vulkanic.core.debug.VulkanicDebugLabel;
 import net.flamgop.vulkanic.core.debug.VulkanicDebugMessenger;
 import net.flamgop.vulkanic.core.debug.VulkanicDebugObjectNameInfo;
+import net.flamgop.vulkanic.surface.VulkanicSurface;
 import net.flamgop.vulkanic.util.EnumIntBitset;
 import net.flamgop.vulkanic.util.VkUtil;
 import org.jetbrains.annotations.*;
@@ -147,6 +148,10 @@ public class VulkanicInstance implements AutoCloseable {
             }
             return physicalDevices;
         }
+    }
+
+    public void destroySurface(@NotNull VulkanicSurface surface) {
+        KHRSurface.vkDestroySurfaceKHR(this.handle, surface.handle(), null);
     }
 
     @Contract(pure = true)
