@@ -7,6 +7,7 @@ import net.flamgop.vulkanic.memory.image.VulkanicImageTiling;
 import net.flamgop.vulkanic.memory.image.VulkanicImageType;
 import net.flamgop.vulkanic.memory.image.VulkanicImageUsageFlag;
 import net.flamgop.vulkanic.surface.VulkanicSurface;
+import net.flamgop.vulkanic.swapchain.VulkanicPresentMode;
 import net.flamgop.vulkanic.swapchain.VulkanicSurfaceTransformFlag;
 import net.flamgop.vulkanic.util.EnumIntBitset;
 import net.flamgop.vulkanic.util.VkUtil;
@@ -94,6 +95,21 @@ public class VulkanicPhysicalDevice {
                     new EnumIntBitset<>(dst.supportedTransforms()), VulkanicSurfaceTransformFlag.valueOf(dst.currentTransform()),
                     new EnumIntBitset<>(dst.supportedCompositeAlpha()), new EnumIntBitset<>(dst.supportedUsageFlags())
             );
+        }
+    }
+
+    public @NotNull List<VulkanicPresentMode> surfacePresentModes(@NotNull VulkanicSurface surface) {
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            IntBuffer pCount = stack.callocInt(1);
+            KHRSurface.vkGetPhysicalDeviceSurfacePresentModesKHR(this.handle, surface.handle(), pCount, null);
+            IntBuffer pPresentModes = stack.callocInt(pCount.get(0));
+            KHRSurface.vkGetPhysicalDeviceSurfacePresentModesKHR(this.handle, surface.handle(), pCount, pPresentModes);
+
+            List<VulkanicPresentMode> presentModes = new ArrayList<>();
+            for (int i = 0; i < pCount.get(0); i++) {
+                presentModes.add(VulkanicPresentMode.valueOf(pPresentModes.get(i)));
+            }
+            return presentModes;
         }
     }
 
