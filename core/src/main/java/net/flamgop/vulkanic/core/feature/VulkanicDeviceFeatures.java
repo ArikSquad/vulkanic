@@ -119,6 +119,8 @@ public class VulkanicDeviceFeatures extends VulkanicFeaturesGenerated implements
         return features;
     }
 
+    @VulkanFeature(extension = KHRPresentModeFifoLatestReady.VK_KHR_PRESENT_MODE_FIFO_LATEST_READY_EXTENSION_NAME, featuresStruct = VkPhysicalDevicePresentModeFifoLatestReadyFeaturesKHR.class)
+    private static final boolean presentModeFifoLatestReady = false;
     @VulkanFeature(extension = EXTMeshShader.VK_EXT_MESH_SHADER_EXTENSION_NAME, featuresStruct = VkPhysicalDeviceSynchronization2Features.class)
     private static final boolean synchronization2 = false;
     @VulkanFeature(extension = KHRBufferDeviceAddress.VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME, featuresStruct = VkPhysicalDeviceBufferDeviceAddressFeatures.class)
