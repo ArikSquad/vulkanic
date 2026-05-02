@@ -79,11 +79,11 @@ public final class VulkanicDeviceSize implements Comparable<VulkanicDeviceSize>,
         for (int i = 0; i < values.length; i++) {
             if (bytes >= values[i]) {
                 double result = (double) bytes / values[i];
-                return FORMAT.format(result) + " " + units[i];
+                return FORMAT.format(result) + units[i];
             }
         }
 
-        return bytes + " B";
+        return bytes + "B";
     }
 
     @Override

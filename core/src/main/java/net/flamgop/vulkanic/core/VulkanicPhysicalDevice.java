@@ -27,10 +27,14 @@ import static org.lwjgl.vulkan.VK11.*;
 public class VulkanicPhysicalDevice {
 
     private final VkPhysicalDevice handle;
+    private final VulkanicPhysicalDeviceProperties deviceProperties;
 
     @ApiStatus.Internal
     public VulkanicPhysicalDevice(VkInstance instance, long handle) {
         this.handle = new VkPhysicalDevice(handle, instance);
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            this.deviceProperties = new VulkanicPhysicalDeviceProperties(properties(VkPhysicalDeviceProperties.calloc(stack)));
+        }
     }
 
     public boolean supportsFeatures(@NotNull VulkanicDeviceFeatures features) {
@@ -111,6 +115,16 @@ public class VulkanicPhysicalDevice {
             }
             return presentModes;
         }
+    }
+
+    public @NotNull VulkanicPhysicalDeviceProperties properties() {
+        return deviceProperties;
+    }
+
+    @Contract(mutates = "param1", value = "_ -> param1")
+    public @NotNull VkPhysicalDeviceProperties properties(@NotNull VkPhysicalDeviceProperties dst) {
+        vkGetPhysicalDeviceProperties(this.handle, dst);
+        return dst;
     }
 
     @Contract(mutates = "param1", value = "_, _ -> param1")

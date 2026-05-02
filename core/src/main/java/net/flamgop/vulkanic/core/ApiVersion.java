@@ -1,5 +1,6 @@
 package net.flamgop.vulkanic.core;
 
+import org.jspecify.annotations.NonNull;
 import org.lwjgl.vulkan.*;
 
 public record ApiVersion(int variant, int major, int minor, int patch) {
@@ -21,5 +22,10 @@ public record ApiVersion(int variant, int major, int minor, int patch) {
 
     public int version() {
         return VK10.VK_MAKE_API_VERSION(variant, major, minor, patch);
+    }
+
+    @Override
+    public @NonNull String toString() {
+        return String.format("%d.%d.%d.%d", variant, major, minor, patch);
     }
 }
