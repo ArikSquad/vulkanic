@@ -3,12 +3,20 @@ plugins {
     id("maven-publish")
 }
 
+val lwjglNativeTargets = listOf(
+    "natives-linux",
+    "natives-linux-arm64",
+    "natives-macos",
+    "natives-macos-arm64",
+    "natives-windows",
+    "natives-windows-arm64"
+)
+
 dependencies {
-    compileOnly(project(":annotations"))
-    annotationProcessor(project(":processor"))
+    compileOnly(project(":vulkanic:annotations"))
+    annotationProcessor(project(":vulkanic:processor"))
 
     compileOnlyApi(libs.jetbrains.annotations)
-    api(libs.jspecify)
 
     api(libs.joml)
     api(platform(libs.lwjgl.bom))
@@ -17,8 +25,10 @@ dependencies {
     api(libs.lwjgl.vma)
     api(libs.lwjgl.vulkan)
 
-    implementation(variantOf(libs.lwjgl.natives) { classifier("natives-windows") })
-    implementation(variantOf(libs.lwjgl.vma.natives) { classifier("natives-windows") })
+    lwjglNativeTargets.forEach { c ->
+        implementation(variantOf(libs.lwjgl.natives) { classifier(c) })
+        implementation(variantOf(libs.lwjgl.vma.natives) { classifier(c) })
+    }
 }
 
 sourceSets {

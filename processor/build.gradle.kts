@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":annotations"))
+    implementation(project(":vulkanic:annotations"))
     implementation(libs.javapoet)
 
 

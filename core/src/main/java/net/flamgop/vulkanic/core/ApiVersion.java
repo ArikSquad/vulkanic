@@ -1,7 +1,11 @@
 package net.flamgop.vulkanic.core;
 
-import org.jspecify.annotations.NonNull;
-import org.lwjgl.vulkan.*;
+import org.jetbrains.annotations.NotNull;
+import org.lwjgl.vulkan.VK10;
+import org.lwjgl.vulkan.VK11;
+import org.lwjgl.vulkan.VK12;
+import org.lwjgl.vulkan.VK13;
+import org.lwjgl.vulkan.VK14;
 
 public record ApiVersion(int variant, int major, int minor, int patch) {
 
@@ -25,7 +29,7 @@ public record ApiVersion(int variant, int major, int minor, int patch) {
     }
 
     @Override
-    public @NonNull String toString() {
+    public @NotNull String toString() {
         return String.format("%d.%d.%d.%d", variant, major, minor, patch);
     }
 }
