@@ -595,7 +595,7 @@ public class VulkanicDevice implements AutoCloseable {
     }
 
     @SuppressWarnings("resource")
-    public @NotNull VulkanicComputePipeline createComputePipeline(@NotNull VulkanicPipelineLayout layout, @NotNull VulkanicPipelineShaderStage stageInfo) {
+    public @NotNull VulkanicComputePipeline createComputePipeline(@NotNull VulkanicPipelineLayout layout, @Nullable VulkanicPipelineCache pipelineCache, @NotNull VulkanicPipelineShaderStage stageInfo) {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             LongBuffer pPipeline = stack.callocLong(1);
             VkComputePipelineCreateInfo.Buffer createInfo = VkComputePipelineCreateInfo.calloc(1,stack)
@@ -611,7 +611,7 @@ public class VulkanicDevice implements AutoCloseable {
                                 .pNext(stageInfo.pNext())
                     );
 
-            VkUtil.check(VK10.vkCreateComputePipelines(handle, 0, createInfo, null, pPipeline));
+            VkUtil.check(VK10.vkCreateComputePipelines(handle, pipelineCache != null ? pipelineCache.handle() : VK10.VK_NULL_HANDLE, createInfo, null, pPipeline));
             return new VulkanicComputePipeline(this, pPipeline.get(0));
         }
     }
@@ -630,6 +630,7 @@ public class VulkanicDevice implements AutoCloseable {
             @Nullable VulkanicDepthStencilState depthStencilState,
             @Nullable VulkanicColorBlendState colorBlendState,
             @Nullable VulkanicPipelineDynamicState dynamicState,
+            @Nullable VulkanicPipelineCache pipelineCache,
             @Nullable VulkanicDescriptorSetAndBindingMapping descriptorSetAndBindingMapping,
             @Nullable VulkanicPipelineRenderingInfo renderingInfo,
             long next
@@ -780,7 +781,7 @@ public class VulkanicDevice implements AutoCloseable {
                     .basePipelineIndex(-1)
                     .pNext(pNext);
 
-            VkUtil.check(VK10.vkCreateGraphicsPipelines(handle, VK10.VK_NULL_HANDLE, createInfo, null, pPipeline));
+            VkUtil.check(VK10.vkCreateGraphicsPipelines(handle, pipelineCache != null ? pipelineCache.handle() : VK10.VK_NULL_HANDLE, createInfo, null, pPipeline));
 
             return new VulkanicGraphicsPipeline(this, pPipeline.get(0));
         }
@@ -1011,6 +1012,45 @@ public class VulkanicDevice implements AutoCloseable {
 
     public @NotNull VulkanicDeviceSize getPhysicalDeviceDescriptorSize(VulkanicDescriptorType type) {
         return VulkanicDeviceSize.ofBytes(EXTDescriptorHeap.vkGetPhysicalDeviceDescriptorSizeEXT(this.physicalDevice.handle(), type.qualifier()));
+    }
+
+    public @NotNull VulkanicPipelineCache createPipelineCache(@NotNull EnumIntBitset<VulkanicPipelineCacheCreateFlag> flags, @Nullable ByteBuffer initialData) {
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            VkPipelineCacheCreateInfo createInfo = VkPipelineCacheCreateInfo.calloc(stack)
+                    .sType$Default()
+                    .flags(flags.mask())
+                    .pInitialData(initialData);
+
+            LongBuffer pCache = stack.callocLong(1);
+            VK10.vkCreatePipelineCache(this.handle, createInfo, null, pCache);
+
+            return new VulkanicPipelineCache(this, pCache.get(0));
+        }
+    }
+
+    public void destroyPipelineCache(@NotNull VulkanicPipelineCache cache) {
+        VK10.vkDestroyPipelineCache(this.handle, cache.handle(), null);
+    }
+
+    public @NotNull VulkanicResult mergePipelineCaches(@NotNull VulkanicPipelineCache dstCache, @NotNull List<VulkanicPipelineCache> srcCaches) {
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            return VulkanicResult.valueOf(VK10.vkMergePipelineCaches(this.handle, dstCache.handle(), stack.longs(srcCaches.stream().mapToLong(VulkanicPipelineCache::handle).toArray())));
+        }
+    }
+
+    public long getPipelineCacheDataSize(@NotNull VulkanicPipelineCache cache) {
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            PointerBuffer pDataSize = stack.callocPointer(1);
+            VK10.vkGetPipelineCacheData(this.handle, cache.handle(), pDataSize, null);
+            return pDataSize.get(0);
+        }
+    }
+
+    public @NotNull VulkanicResult getPipelineCacheData(@NotNull VulkanicPipelineCache cache, @NotNull ByteBuffer buffer) {
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            PointerBuffer pDataSize = stack.callocPointer(1);
+            return VulkanicResult.valueOf(VK10.vkGetPipelineCacheData(this.handle, cache.handle(), pDataSize, buffer));
+        }
     }
 
     public @NotNull CompletableFuture<Void> submitTransient(

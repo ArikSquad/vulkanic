@@ -2,6 +2,7 @@ package net.flamgop.vulkanic.pipeline;
 
 import net.flamgop.vulkanic.core.VulkanicDevice;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 public final class VulkanicGraphicsPipeline implements VulkanicPipeline {
@@ -17,7 +18,8 @@ public final class VulkanicGraphicsPipeline implements VulkanicPipeline {
         this.handle = handle;
     }
 
-    @Override
+    @ApiStatus.Internal
+    @Contract(pure = true)
     public long handle() {
         return handle;
     }

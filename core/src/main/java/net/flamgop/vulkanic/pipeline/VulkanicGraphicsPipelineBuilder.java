@@ -139,7 +139,7 @@ public final class VulkanicGraphicsPipelineBuilder implements VulkanicPipelineBu
     }
 
     @Override
-    public @NotNull VulkanicGraphicsPipeline build() {
+    public @NotNull VulkanicGraphicsPipeline build(@NotNull VulkanicPipelineCache pipelineCache) {
         if (viewportState != null && rasterizationState == null) throw new IllegalStateException("Viewport state is co-dependent on rasterization state!");
         if (shaderStages.isEmpty() || !ShaderUtil.containsPrimitiveStage(shaderStages)) throw new IllegalStateException("A graphics pipeline requires at least one primitive-producing shader stage. (i.e. VERTEX or MESH_EXT)");
         if (ShaderUtil.containsMultiplePrimitiveStages(shaderStages)) throw new IllegalStateException("A graphics pipeline may not contain more than one primitive-producing shader stage. (i.e. VERTEX or MESH_EXT)");
@@ -170,6 +170,7 @@ public final class VulkanicGraphicsPipelineBuilder implements VulkanicPipelineBu
                 viewportState, rasterizationState,
                 multisampleState, depthStencilState,
                 colorBlendState, dynamicState,
+                pipelineCache,
                 descriptorSetAndBindingMapping,
                 renderingInfo,
                 pNext
