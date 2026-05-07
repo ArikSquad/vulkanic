@@ -26,7 +26,7 @@ This library is usable, but very
 - maybe swap LWJGL for a more abstract Vulkan library (e.g. for better android support)
 
 ## Contributing
-Pull requests are welcome, though this library has a very specific style, so I may make changes to the design style.
+Pull requests are welcome, though this library has a very specific style, so I may make changes to the anything added.
 
 ## License
 This project uses MIT
