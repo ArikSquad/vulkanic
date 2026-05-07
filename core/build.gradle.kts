@@ -8,7 +8,7 @@ dependencies {
     annotationProcessor(project(":processor"))
 
     compileOnlyApi(libs.jetbrains.annotations)
-    api(libs.jspecify)
+    implementation(libs.jspecify)
 
     api(libs.joml)
     api(platform(libs.lwjgl.bom))
