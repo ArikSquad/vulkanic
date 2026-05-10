@@ -13,9 +13,10 @@ val lwjglNativeTargets = listOf(
 )
 
 dependencies {
-    implementation(project(":core"))
+    implementation(project(":vulkanic:core"))
 
     api(libs.lwjgl.glfw)
+
     lwjglNativeTargets.forEach { c ->
         implementation(variantOf(libs.lwjgl.glfw.natives) { classifier(c) })
     }

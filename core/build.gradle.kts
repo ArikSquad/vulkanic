@@ -13,8 +13,8 @@ val lwjglNativeTargets = listOf(
 )
 
 dependencies {
-    compileOnly(project(":annotations"))
-    annotationProcessor(project(":processor"))
+    compileOnly(project(":vulkanic:annotations"))
+    annotationProcessor(project(":vulkanic:processor"))
 
     compileOnlyApi(libs.jetbrains.annotations)
     implementation(libs.jspecify)
