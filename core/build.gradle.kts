@@ -17,6 +17,7 @@ dependencies {
     annotationProcessor(project(":vulkanic:processor"))
 
     compileOnlyApi(libs.jetbrains.annotations)
+    implementation(libs.jspecify)
 
     api(libs.joml)
     api(platform(libs.lwjgl.bom))
