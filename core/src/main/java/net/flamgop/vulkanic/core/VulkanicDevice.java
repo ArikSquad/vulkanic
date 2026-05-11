@@ -800,6 +800,7 @@ public class VulkanicDevice implements AutoCloseable {
     }
 
     public @NotNull VulkanicSwapchain createSwapchain(
+            @NotNull EnumIntBitset<VulkanicSwapchainCreateFlag> flags,
             @NotNull VulkanicSurface surface, int minImageCount,
             @NotNull VulkanicFormat imageFormat, @NotNull VulkanicColorSpace imageColorSpace,
             int width, int height, int imageArrayLayers,
@@ -809,10 +810,11 @@ public class VulkanicDevice implements AutoCloseable {
             @NotNull VulkanicSurfaceTransformFlag preTransform, @NotNull VulkanicCompositeAlphaFlag compositeAlpha,
             @NotNull VulkanicPresentMode presentMode, boolean clipped
     ) throws VulkanException {
-        return createSwapchain(surface, minImageCount, imageFormat, imageColorSpace, width, height, imageArrayLayers, imageUsage, imageSharingMode, queueFamilyIndexCount, queueFamilyIndices, preTransform, compositeAlpha, presentMode, clipped, null);
+        return createSwapchain(flags, surface, minImageCount, imageFormat, imageColorSpace, width, height, imageArrayLayers, imageUsage, imageSharingMode, queueFamilyIndexCount, queueFamilyIndices, preTransform, compositeAlpha, presentMode, clipped, null);
     }
 
     public @NotNull VulkanicSwapchain createSwapchain(
+            @NotNull EnumIntBitset<VulkanicSwapchainCreateFlag> flags,
             @NotNull VulkanicSurface surface, int minImageCount,
             @NotNull VulkanicFormat imageFormat, @NotNull VulkanicColorSpace imageColorSpace,
             int width, int height, int imageArrayLayers,
@@ -828,6 +830,7 @@ public class VulkanicDevice implements AutoCloseable {
             LongBuffer pSwapchain = stack.callocLong(1);
             VkSwapchainCreateInfoKHR swapchainCreateInfoKHR = VkSwapchainCreateInfoKHR.calloc(stack)
                     .sType$Default()
+                    .flags(flags.mask())
                     .surface(surface.handle())
                     .minImageCount(minImageCount)
                     .imageFormat(imageFormat.qualifier())
