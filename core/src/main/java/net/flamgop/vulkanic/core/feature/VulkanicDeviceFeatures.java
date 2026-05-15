@@ -1,5 +1,6 @@
 package net.flamgop.vulkanic.core.feature;
 
+import net.flamgop.vulkanic.annotations.VulkanExtension;
 import net.flamgop.vulkanic.annotations.VulkanFeature;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.system.NativeResource;
@@ -189,7 +190,7 @@ public class VulkanicDeviceFeatures extends VulkanicFeaturesGenerated implements
     private static final boolean shaderStorageImageArrayDynamicIndexing = false;
     @VulkanFeature(extension = KHRSamplerYcbcrConversion.VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME, featuresStruct = VkPhysicalDeviceSamplerYcbcrConversionFeatures.class)
     private static final boolean samplerYcbcrConversion = false;
-    @VulkanFeature(extension = KHRSamplerMirrorClampToEdge.VK_KHR_SAMPLER_MIRROR_CLAMP_TO_EDGE_EXTENSION_NAME, featuresStruct = VkPhysicalDeviceVulkan12Features.class)
+    @VulkanExtension(KHRSamplerMirrorClampToEdge.VK_KHR_SAMPLER_MIRROR_CLAMP_TO_EDGE_EXTENSION_NAME)
     private static final boolean samplerMirrorClampToEdge = false;
     @VulkanFeature(extension = EXTDescriptorIndexing.VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME, featuresStruct = VkPhysicalDeviceDescriptorIndexingFeatures.class)
     private static final boolean shaderUniformTexelBufferArrayDynamicIndexing = false;
@@ -241,6 +242,10 @@ public class VulkanicDeviceFeatures extends VulkanicFeaturesGenerated implements
     private static final boolean rayTracingPipeline = false;
     @VulkanFeature(extension = KHRAccelerationStructure.VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME, featuresStruct = VkPhysicalDeviceAccelerationStructureFeaturesKHR.class)
     private static final boolean accelerationStructure = false;
+    @VulkanFeature(extension = EXTPresentTiming.VK_EXT_PRESENT_TIMING_EXTENSION_NAME, featuresStruct = VkPhysicalDevicePresentTimingFeaturesEXT.class)
+    private static final boolean presentTiming = false;
+    @VulkanFeature(extension = EXTSwapchainMaintenance1.VK_EXT_SWAPCHAIN_MAINTENANCE_1_EXTENSION_NAME, featuresStruct = VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT.class)
+    private static final boolean swapchainMaintenance1 = false;
 
     private static final MethodHandles.Lookup LOOKUP = MethodHandles.lookup();
     private final List<NativeResource> pNextChain = new ArrayList<>();

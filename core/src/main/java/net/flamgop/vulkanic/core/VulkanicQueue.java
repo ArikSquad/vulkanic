@@ -85,8 +85,8 @@ public record VulkanicQueue(int family, @NotNull VkQueue handle) {
         }
     }
 
-    public int waitIdle() {
-        return VK11.vkQueueWaitIdle(this.handle);
+    public @NotNull VulkanicResult waitIdle() {
+        return VulkanicResult.valueOf(VK11.vkQueueWaitIdle(this.handle));
     }
 
     @Override
