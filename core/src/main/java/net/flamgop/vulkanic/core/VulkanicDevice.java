@@ -79,13 +79,13 @@ public class VulkanicDevice implements AutoCloseable {
 
     @ApiStatus.Internal
     public VulkanicDevice(
-            @NotNull VulkanicInstance instance,
-            @NotNull VkDevice handle,
-            @NotNull VulkanicPhysicalDevice physicalDevice,
-            @NotNull VulkanicDeviceFeatures features,
-            @NotNull List<VulkanicQueueInfo> queueInfos,
-            @NotNull Collection<String> extensions,
-            @NotNull Collection<String> layers
+        @NotNull VulkanicInstance instance,
+        @NotNull VkDevice handle,
+        @NotNull VulkanicPhysicalDevice physicalDevice,
+        @NotNull VulkanicDeviceFeatures features,
+        @NotNull List<VulkanicQueueInfo> queueInfos,
+        @NotNull Collection<String> extensions,
+        @NotNull Collection<String> layers
     ) {
         this.instance = instance;
         this.handle = handle;
@@ -116,12 +116,12 @@ public class VulkanicDevice implements AutoCloseable {
     /// @see VulkanicPhysicalDevice#supportedExtensions
     /// @see VulkanicPhysicalDevice#supportsFeatures
     public VulkanicDevice(
-            @NotNull VulkanicInstance instance,
-            @NotNull VulkanicPhysicalDevice physicalDevice,
-            @NotNull Collection<String> extensions,
-            @NotNull Collection<String> layers,
-            @NotNull List<VulkanicQueueInfo> queueCreateInfos,
-            @NotNull VulkanicDeviceFeatures features
+        @NotNull VulkanicInstance instance,
+        @NotNull VulkanicPhysicalDevice physicalDevice,
+        @NotNull Collection<String> extensions,
+        @NotNull Collection<String> layers,
+        @NotNull List<VulkanicQueueInfo> queueCreateInfos,
+        @NotNull VulkanicDeviceFeatures features
     ) {
         this.instance = instance;
         this.features = features;
@@ -149,18 +149,18 @@ public class VulkanicDevice implements AutoCloseable {
                 VulkanicQueueInfo queueInfo = queueCreateInfos.get(i);
                 //noinspection resource
                 pQueueCreateInfos.get(i)
-                        .sType$Default()
-                        .queueFamilyIndex(queueInfo.queueFamilyIndex())
-                        .pQueuePriorities(stack.floats(queueInfo.queuePriorities()))
-                        .flags(queueInfo.createFlags().mask());
+                    .sType$Default()
+                    .queueFamilyIndex(queueInfo.queueFamilyIndex())
+                    .pQueuePriorities(stack.floats(queueInfo.queuePriorities()))
+                    .flags(queueInfo.createFlags().mask());
             }
 
             VkDeviceCreateInfo ci = VkDeviceCreateInfo.calloc(stack)
-                    .sType$Default()
-                    .ppEnabledLayerNames(layersBuf)
-                    .ppEnabledExtensionNames(extensionsBuf)
-                    .pQueueCreateInfos(pQueueCreateInfos)
-                    .pNext(features.pNext());
+                .sType$Default()
+                .ppEnabledLayerNames(layersBuf)
+                .ppEnabledExtensionNames(extensionsBuf)
+                .pQueueCreateInfos(pQueueCreateInfos)
+                .pNext(features.pNext());
 
             VkUtil.check(VK11.vkCreateDevice(physicalDevice.handle(), ci, null, pDevice));
             handle = new VkDevice(pDevice.get(0), physicalDevice.handle(), ci);
@@ -175,8 +175,8 @@ public class VulkanicDevice implements AutoCloseable {
     private static void assertSupportsAllExtensions(VulkanicPhysicalDevice physicalDevice, Collection<String> extensions) {
         List<VulkanicExtensionProperties> extensionProperties = physicalDevice.supportedExtensions();
         Set<String> availableExtensions = extensionProperties.stream()
-                .map(VulkanicExtensionProperties::name)
-                .collect(Collectors.toSet());
+            .map(VulkanicExtensionProperties::name)
+            .collect(Collectors.toSet());
         for (String extension : extensions) {
             if (!availableExtensions.contains(extension)) {
                 throw new UnsupportedOperationException(String.format("Extension %s is not supported", extension));
@@ -212,8 +212,8 @@ public class VulkanicDevice implements AutoCloseable {
     public @NotNull VulkanicFence createFence(EnumIntBitset<VulkanicFenceCreateFlag> createFlags) {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             VkFenceCreateInfo createInfo = VkFenceCreateInfo.calloc(stack)
-                    .flags(createFlags.mask())
-                    .sType$Default();
+                .flags(createFlags.mask())
+                .sType$Default();
 
             LongBuffer pFence = stack.callocLong(1);
             VkUtil.check(VK11.vkCreateFence(this.handle, createInfo, null, pFence));
@@ -262,11 +262,11 @@ public class VulkanicDevice implements AutoCloseable {
     public @NotNull VulkanicSemaphore createSemaphore(@NotNull VulkanicSemaphoreType type, long initialValue) {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             VkSemaphoreCreateInfo createInfo = VkSemaphoreCreateInfo.calloc(stack)
-                    .pNext(VkSemaphoreTypeCreateInfo.calloc(stack)
-                            .semaphoreType(type.qualifier())
-                            .initialValue(initialValue)
-                            .sType$Default())
-                    .sType$Default();
+                .pNext(VkSemaphoreTypeCreateInfo.calloc(stack)
+                    .semaphoreType(type.qualifier())
+                    .initialValue(initialValue)
+                    .sType$Default())
+                .sType$Default();
 
             LongBuffer pSemaphore = stack.callocLong(1);
             VK11.vkCreateSemaphore(this.handle, createInfo, null, pSemaphore);
@@ -279,14 +279,14 @@ public class VulkanicDevice implements AutoCloseable {
     }
 
     public @NotNull VulkanicCommandPool createCommandPool(
-            EnumIntBitset<VulkanicCommandPoolCreateFlag> flags,
-            VulkanicQueueFamily queueFamily
+        EnumIntBitset<VulkanicCommandPoolCreateFlag> flags,
+        VulkanicQueueFamily queueFamily
     ) {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             VkCommandPoolCreateInfo createInfo =  VkCommandPoolCreateInfo.calloc(stack)
-                    .sType$Default()
-                    .flags(flags.mask())
-                    .queueFamilyIndex(queueFamily.index());
+                .sType$Default()
+                .flags(flags.mask())
+                .queueFamilyIndex(queueFamily.index());
             LongBuffer pCommandPool = stack.callocLong(1);
             VK11.vkCreateCommandPool(this.handle, createInfo, null, pCommandPool);
             return new VulkanicCommandPool(this, pCommandPool.get(0));
@@ -304,10 +304,10 @@ public class VulkanicDevice implements AutoCloseable {
     public @NotNull VulkanicCommandBuffer allocateCommandBuffer(@NotNull VulkanicCommandPool pool, @NotNull VulkanicCommandBufferLevel level) {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             VkCommandBufferAllocateInfo pAllocateInfo = VkCommandBufferAllocateInfo.calloc(stack)
-                    .sType$Default()
-                    .commandPool(pool.handle())
-                    .level(level.qualifier())
-                    .commandBufferCount(1);
+                .sType$Default()
+                .commandPool(pool.handle())
+                .level(level.qualifier())
+                .commandBufferCount(1);
             PointerBuffer pCommandBuffers = stack.callocPointer(1);
             VK11.vkAllocateCommandBuffers(this.handle, pAllocateInfo, pCommandBuffers);
             return new VulkanicCommandBuffer(pool, new VkCommandBuffer(pCommandBuffers.get(0), this.handle));
@@ -317,10 +317,10 @@ public class VulkanicDevice implements AutoCloseable {
     public @NotNull VulkanicCommandBuffer[] allocateCommandBuffers(@NotNull VulkanicCommandPool pool, @NotNull VulkanicCommandBufferLevel level, int count) {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             VkCommandBufferAllocateInfo pAllocateInfo = VkCommandBufferAllocateInfo.calloc(stack)
-                    .sType$Default()
-                    .commandPool(pool.handle())
-                    .level(level.qualifier())
-                    .commandBufferCount(count);
+                .sType$Default()
+                .commandPool(pool.handle())
+                .level(level.qualifier())
+                .commandBufferCount(count);
             PointerBuffer pCommandBuffers = stack.callocPointer(count);
             VK11.vkAllocateCommandBuffers(this.handle, pAllocateInfo, pCommandBuffers);
             VulkanicCommandBuffer[] commandBuffers = new VulkanicCommandBuffer[count];
@@ -360,21 +360,21 @@ public class VulkanicDevice implements AutoCloseable {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             LongBuffer pImageView = stack.callocLong(1);
             VkImageViewCreateInfo createInfo = VkImageViewCreateInfo.calloc(stack)
-                    .sType$Default()
-                    .image(image.handle())
-                    .viewType(imageViewCreateInfo.viewType().qualifier())
-                    .format(imageViewCreateInfo.format().qualifier())
-                    .components(VkComponentMapping.calloc(stack)
-                            .r(imageViewCreateInfo.componentMapping().r().qualifier())
-                            .g(imageViewCreateInfo.componentMapping().g().qualifier())
-                            .b(imageViewCreateInfo.componentMapping().b().qualifier())
-                            .a(imageViewCreateInfo.componentMapping().a().qualifier()))
-                    .subresourceRange(VkImageSubresourceRange.calloc(stack)
-                            .aspectMask(imageViewCreateInfo.subresourceRange().aspectMask().mask())
-                            .baseMipLevel(imageViewCreateInfo.subresourceRange().baseMipLevel())
-                            .levelCount(imageViewCreateInfo.subresourceRange().levelCount())
-                            .baseArrayLayer(imageViewCreateInfo.subresourceRange().baseArrayLayer())
-                            .layerCount(imageViewCreateInfo.subresourceRange().layerCount()));
+                .sType$Default()
+                .image(image.handle())
+                .viewType(imageViewCreateInfo.viewType().qualifier())
+                .format(imageViewCreateInfo.format().qualifier())
+                .components(VkComponentMapping.calloc(stack)
+                    .r(imageViewCreateInfo.componentMapping().r().qualifier())
+                    .g(imageViewCreateInfo.componentMapping().g().qualifier())
+                    .b(imageViewCreateInfo.componentMapping().b().qualifier())
+                    .a(imageViewCreateInfo.componentMapping().a().qualifier()))
+                .subresourceRange(VkImageSubresourceRange.calloc(stack)
+                    .aspectMask(imageViewCreateInfo.subresourceRange().aspectMask().mask())
+                    .baseMipLevel(imageViewCreateInfo.subresourceRange().baseMipLevel())
+                    .levelCount(imageViewCreateInfo.subresourceRange().levelCount())
+                    .baseArrayLayer(imageViewCreateInfo.subresourceRange().baseArrayLayer())
+                    .layerCount(imageViewCreateInfo.subresourceRange().layerCount()));
             VkUtil.check(VK11.vkCreateImageView(this.handle, createInfo, null, pImageView));
             return new VulkanicImageView(this, image, pImageView.get(0));
         }
@@ -397,8 +397,8 @@ public class VulkanicDevice implements AutoCloseable {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             LongBuffer pShaderModule = stack.callocLong(1);
             VK10.vkCreateShaderModule(handle, VkShaderModuleCreateInfo.calloc(stack)
-                    .sType$Default()
-                    .pCode(pCode), null, pShaderModule);
+                .sType$Default()
+                .pCode(pCode), null, pShaderModule);
             return new VulkanicShaderModule(this, pShaderModule.get(0));
         }
     }
@@ -424,9 +424,9 @@ public class VulkanicDevice implements AutoCloseable {
             for (int i = 0; i < pushConstantRanges.size(); i++) {
                 VulkanicPushConstantRange pushConstantRange = pushConstantRanges.get(i);
                 pPushConstantRanges.get(i)
-                        .stageFlags(pushConstantRange.stageFlags().mask())
-                        .offset(pushConstantRange.offset())
-                        .size((int) pushConstantRange.size().bytes()); // note: push constants can't actually be larger than like 512 bytes usually
+                    .stageFlags(pushConstantRange.stageFlags().mask())
+                    .offset(pushConstantRange.offset())
+                    .size((int) pushConstantRange.size().bytes()); // note: push constants can't actually be larger than like 512 bytes usually
             }
 
             LongBuffer pSetLayouts = stack.callocLong(setLayouts.size());
@@ -435,10 +435,10 @@ public class VulkanicDevice implements AutoCloseable {
             }
 
             VkPipelineLayoutCreateInfo createInfo = VkPipelineLayoutCreateInfo.calloc(stack)
-                    .sType$Default()
-                    .pPushConstantRanges(pPushConstantRanges)
-                    .pSetLayouts(pSetLayouts)
-                    .setLayoutCount(setLayouts.size());
+                .sType$Default()
+                .pPushConstantRanges(pPushConstantRanges)
+                .pSetLayouts(pSetLayouts)
+                .setLayoutCount(setLayouts.size());
 
             LongBuffer pPipelineLayout = stack.callocLong(1);
             VK10.vkCreatePipelineLayout(handle, createInfo, null, pPipelineLayout);
@@ -462,17 +462,17 @@ public class VulkanicDevice implements AutoCloseable {
                 }
 
                 pBindings.get(i)
-                        .descriptorCount(binding.descriptorCount())
-                        .binding(binding.binding())
-                        .descriptorType(binding.descriptorType().qualifier())
-                        .stageFlags(binding.stageFlags().mask())
-                        .pImmutableSamplers(binding.immutableSamplers().isEmpty() ? null : pImmutableSamplers);
+                    .descriptorCount(binding.descriptorCount())
+                    .binding(binding.binding())
+                    .descriptorType(binding.descriptorType().qualifier())
+                    .stageFlags(binding.stageFlags().mask())
+                    .pImmutableSamplers(binding.immutableSamplers().isEmpty() ? null : pImmutableSamplers);
             }
 
             VkDescriptorSetLayoutCreateInfo createInfo = VkDescriptorSetLayoutCreateInfo.calloc(stack)
-                    .sType$Default()
-                    .flags(flags.mask())
-                    .pBindings(pBindings);
+                .sType$Default()
+                .flags(flags.mask())
+                .pBindings(pBindings);
 
             LongBuffer pSetLayout = stack.callocLong(1);
             VK10.vkCreateDescriptorSetLayout(handle, createInfo, null, pSetLayout);
@@ -508,9 +508,9 @@ public class VulkanicDevice implements AutoCloseable {
                             for (int i = 0; i < write.imageInfos().size(); i++) {
                                 VulkanicDescriptorImageInfo imageInfo = write.imageInfos().get(i);
                                 pImageInfo.get(i)
-                                        .sampler(imageInfo.sampler() != null ? imageInfo.sampler().handle() : 0)
-                                        .imageView(imageInfo.imageView() != null ? imageInfo.imageView().handle() : 0)
-                                        .imageLayout(imageInfo.imageLayout().qualifier());
+                                    .sampler(imageInfo.sampler() != null ? imageInfo.sampler().handle() : 0)
+                                    .imageView(imageInfo.imageView() != null ? imageInfo.imageView().handle() : 0)
+                                    .imageLayout(imageInfo.imageLayout().qualifier());
                             }
                         } else pImageInfo = null;
                         VkDescriptorBufferInfo.Buffer pBufferInfo;
@@ -519,33 +519,33 @@ public class VulkanicDevice implements AutoCloseable {
                             for (int i = 0; i < write.bufferInfos().size(); i++) {
                                 VulkanicDescriptorBufferInfo bufferInfo = write.bufferInfos().get(i);
                                 pBufferInfo.get(i)
-                                        .buffer(bufferInfo.buffer().handle())
-                                        .offset(bufferInfo.offset())
-                                        .range(bufferInfo.range());
+                                    .buffer(bufferInfo.buffer().handle())
+                                    .offset(bufferInfo.offset())
+                                    .range(bufferInfo.range());
                             }
                         } else pBufferInfo = null;
                         pWrites.get(writeCount)
-                                .sType$Default()
-                                .dstSet(write.dstSet().handle())
-                                .dstBinding(write.dstBinding())
-                                .dstArrayElement(write.dstArrayElement())
-                                .descriptorCount(write.descriptorCount())
-                                .descriptorType(write.descriptorType().qualifier())
-                                .pImageInfo(pImageInfo)
-                                .pBufferInfo(pBufferInfo)
-                                .pTexelBufferView(write.texelBufferView() != null ? stack.longs(write.texelBufferView()) : null);
+                            .sType$Default()
+                            .dstSet(write.dstSet().handle())
+                            .dstBinding(write.dstBinding())
+                            .dstArrayElement(write.dstArrayElement())
+                            .descriptorCount(write.descriptorCount())
+                            .descriptorType(write.descriptorType().qualifier())
+                            .pImageInfo(pImageInfo)
+                            .pBufferInfo(pBufferInfo)
+                            .pTexelBufferView(write.texelBufferView() != null ? stack.longs(write.texelBufferView()) : null);
                         writeCount += 1;
                     }
                     case VulkanicCopyDescriptorSet copy -> {
                         pCopies.get(copyCount)
-                                .sType$Default()
-                                .srcSet(copy.srcSet().handle())
-                                .srcBinding(copy.srcBinding())
-                                .srcArrayElement(copy.srcArrayElement())
-                                .dstSet(copy.dstSet().handle())
-                                .dstBinding(copy.dstBinding())
-                                .dstArrayElement(copy.dstArrayElement())
-                                .descriptorCount(copy.descriptorCount());
+                            .sType$Default()
+                            .srcSet(copy.srcSet().handle())
+                            .srcBinding(copy.srcBinding())
+                            .srcArrayElement(copy.srcArrayElement())
+                            .dstSet(copy.dstSet().handle())
+                            .dstBinding(copy.dstBinding())
+                            .dstArrayElement(copy.dstArrayElement())
+                            .descriptorCount(copy.descriptorCount());
                         copyCount += 1;
                     }
                 }
@@ -557,24 +557,24 @@ public class VulkanicDevice implements AutoCloseable {
 
     @SuppressWarnings("resource")
     public @NotNull VulkanicDescriptorPool createDescriptorPool(
-            @NotNull EnumIntBitset<VulkanicDescriptorPoolCreateFlag> flags,
-            int maxSets,
-            @NotNull List<VulkanicDescriptorPoolSize> poolSizes
+        @NotNull EnumIntBitset<VulkanicDescriptorPoolCreateFlag> flags,
+        int maxSets,
+        @NotNull List<VulkanicDescriptorPoolSize> poolSizes
     ) {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             VkDescriptorPoolSize.Buffer pPoolSizes = VkDescriptorPoolSize.calloc(poolSizes.size(), stack);
             for (int i = 0; i < poolSizes.size(); i++) {
                 VulkanicDescriptorPoolSize poolSize = poolSizes.get(i);
                 pPoolSizes.get(i)
-                        .type(poolSize.type().qualifier())
-                        .descriptorCount(poolSize.descriptorCount());
+                    .type(poolSize.type().qualifier())
+                    .descriptorCount(poolSize.descriptorCount());
             }
 
             VkDescriptorPoolCreateInfo createInfo = VkDescriptorPoolCreateInfo.calloc(stack)
-                    .sType$Default()
-                    .flags(flags.mask())
-                    .maxSets(maxSets)
-                    .pPoolSizes(pPoolSizes);
+                .sType$Default()
+                .flags(flags.mask())
+                .maxSets(maxSets)
+                .pPoolSizes(pPoolSizes);
             LongBuffer pDescriptorPool = stack.callocLong(1);
             VK10.vkCreateDescriptorPool(handle, createInfo, null, pDescriptorPool);
             return new VulkanicDescriptorPool(this, pDescriptorPool.get(0));
@@ -592,9 +592,9 @@ public class VulkanicDevice implements AutoCloseable {
                 pSetLayouts.put(i, setLayouts.get(i).handle());
             }
             VkDescriptorSetAllocateInfo allocateInfo = VkDescriptorSetAllocateInfo.calloc(stack)
-                    .sType$Default()
-                    .descriptorPool(pool.handle())
-                    .pSetLayouts(pSetLayouts);
+                .sType$Default()
+                .descriptorPool(pool.handle())
+                .pSetLayouts(pSetLayouts);
 
             LongBuffer pDescriptorSet = stack.callocLong(setLayouts.size());
             VK10.vkAllocateDescriptorSets(handle, allocateInfo, pDescriptorSet);
@@ -624,17 +624,17 @@ public class VulkanicDevice implements AutoCloseable {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             LongBuffer pPipeline = stack.callocLong(1);
             VkComputePipelineCreateInfo.Buffer createInfo = VkComputePipelineCreateInfo.calloc(1,stack)
-                    .sType$Default()
-                    .layout(layout.handle())
-                    .stage(stage ->
-                        stage.sType$Default()
-                                .pName(stack.UTF8(stageInfo.entrypoint()))
-                                .pSpecializationInfo(stageInfo.specializationInfo())
-                                .stage(stageInfo.stage().flag())
-                                .module(stageInfo.module().handle())
-                                .flags(stageInfo.flags())
-                                .pNext(stageInfo.pNext())
-                    );
+                .sType$Default()
+                .layout(layout.handle())
+                .stage(stage ->
+                    stage.sType$Default()
+                        .pName(stack.UTF8(stageInfo.entrypoint()))
+                        .pSpecializationInfo(stageInfo.specializationInfo())
+                        .stage(stageInfo.stage().flag())
+                        .module(stageInfo.module().handle())
+                        .flags(stageInfo.flags())
+                        .pNext(stageInfo.pNext())
+                );
 
             VkUtil.check(VK10.vkCreateComputePipelines(handle, pipelineCache != null ? pipelineCache.handle() : VK10.VK_NULL_HANDLE, createInfo, null, pPipeline));
             return new VulkanicComputePipeline(this, pPipeline.get(0));
@@ -643,22 +643,22 @@ public class VulkanicDevice implements AutoCloseable {
 
     @SuppressWarnings("resource")
     public @NotNull VulkanicGraphicsPipeline createGraphicsPipeline(
-            @Nullable VulkanicPipelineLayout layout,
-            @Nullable VulkanicRenderPass renderPass,
-            int subpass,
-            @NotNull List<VulkanicPipelineShaderStage> stages,
-            @Nullable VulkanicVertexInputState vertexInputState,
-            @Nullable VulkanicInputAssemblyState inputAssemblyState,
-            @Nullable VulkanicViewportState viewportState,
-            @Nullable VulkanicRasterizationState rasterizationState,
-            @Nullable VulkanicMultisampleState multisampleState,
-            @Nullable VulkanicDepthStencilState depthStencilState,
-            @Nullable VulkanicColorBlendState colorBlendState,
-            @Nullable VulkanicPipelineDynamicState dynamicState,
-            @Nullable VulkanicPipelineCache pipelineCache,
-            @Nullable VulkanicDescriptorSetAndBindingMapping descriptorSetAndBindingMapping,
-            @Nullable VulkanicPipelineRenderingInfo renderingInfo,
-            long next
+        @Nullable VulkanicPipelineLayout layout,
+        @Nullable VulkanicRenderPass renderPass,
+        int subpass,
+        @NotNull List<VulkanicPipelineShaderStage> stages,
+        @Nullable VulkanicVertexInputState vertexInputState,
+        @Nullable VulkanicInputAssemblyState inputAssemblyState,
+        @Nullable VulkanicViewportState viewportState,
+        @Nullable VulkanicRasterizationState rasterizationState,
+        @Nullable VulkanicMultisampleState multisampleState,
+        @Nullable VulkanicDepthStencilState depthStencilState,
+        @Nullable VulkanicColorBlendState colorBlendState,
+        @Nullable VulkanicPipelineDynamicState dynamicState,
+        @Nullable VulkanicPipelineCache pipelineCache,
+        @Nullable VulkanicDescriptorSetAndBindingMapping descriptorSetAndBindingMapping,
+        @Nullable VulkanicPipelineRenderingInfo renderingInfo,
+        long next
     ) {
         if (layout == null && (!features.supportsDescriptorHeap() || descriptorSetAndBindingMapping == null)) {
             throw new UnsupportedOperationException("if layout is null, the descriptor heap feature must be enabled and a descriptor set and binding mapping must be provided.");
@@ -673,11 +673,11 @@ public class VulkanicDevice implements AutoCloseable {
             for (int i = 0; i < stages.size(); i++) {
                 VulkanicPipelineShaderStage stageInfo = stages.get(i);
                 shaderStages.get(i)
-                        .sType$Default()
-                        .stage(stageInfo.stage().flag())
-                        .module(stageInfo.module().handle())
-                        .pName(stack.UTF8(stageInfo.entrypoint()))
-                        .pSpecializationInfo(stageInfo.specializationInfo());
+                    .sType$Default()
+                    .stage(stageInfo.stage().flag())
+                    .module(stageInfo.module().handle())
+                    .pName(stack.UTF8(stageInfo.entrypoint()))
+                    .pSpecializationInfo(stageInfo.specializationInfo());
             }
 
             long pNext = next;
@@ -698,113 +698,113 @@ public class VulkanicDevice implements AutoCloseable {
 
                 switch (descriptorSetAndBindingMapping.sourceData()) {
                     case VulkanicDescriptorMappingSourceData.ConstantOffset constantOffset -> pSourceData.constantOffset(o ->
-                            o
-                                    .heapOffset(constantOffset.heapOffset())
-                                    .heapArrayStride(constantOffset.heapArrayStride())
-                                    .pEmbeddedSampler(constantOffset.embeddedSampler().populate(VkSamplerCreateInfo.calloc(stack)))
-                                    .samplerHeapOffset(constantOffset.samplerHeapOffset())
-                                    .samplerHeapArrayStride(constantOffset.samplerHeapArrayStride())
+                        o
+                            .heapOffset(constantOffset.heapOffset())
+                            .heapArrayStride(constantOffset.heapArrayStride())
+                            .pEmbeddedSampler(constantOffset.embeddedSampler().populate(VkSamplerCreateInfo.calloc(stack)))
+                            .samplerHeapOffset(constantOffset.samplerHeapOffset())
+                            .samplerHeapArrayStride(constantOffset.samplerHeapArrayStride())
                     );
                     case VulkanicDescriptorMappingSourceData.PushIndex pushIndex -> pSourceData.pushIndex(i ->
-                            i
-                                    .heapOffset(pushIndex.heapOffset())
-                                    .pushOffset(pushIndex.pushOffset())
-                                    .heapIndexStride(pushIndex.heapIndexStride())
-                                    .heapArrayStride(pushIndex.heapArrayStride())
-                                    .pEmbeddedSampler(pushIndex.embeddedSampler().populate(VkSamplerCreateInfo.calloc(stack)))
-                                    .useCombinedImageSamplerIndex(pushIndex.useCombinedImageSamplerIndex())
-                                    .samplerHeapOffset(pushIndex.samplerHeapOffset())
-                                    .samplerPushOffset(pushIndex.samplerPushOffset())
-                                    .samplerHeapIndexStride(pushIndex.samplerHeapIndexStride())
-                                    .samplerHeapArrayStride(pushIndex.samplerHeapArrayStride())
+                        i
+                            .heapOffset(pushIndex.heapOffset())
+                            .pushOffset(pushIndex.pushOffset())
+                            .heapIndexStride(pushIndex.heapIndexStride())
+                            .heapArrayStride(pushIndex.heapArrayStride())
+                            .pEmbeddedSampler(pushIndex.embeddedSampler().populate(VkSamplerCreateInfo.calloc(stack)))
+                            .useCombinedImageSamplerIndex(pushIndex.useCombinedImageSamplerIndex())
+                            .samplerHeapOffset(pushIndex.samplerHeapOffset())
+                            .samplerPushOffset(pushIndex.samplerPushOffset())
+                            .samplerHeapIndexStride(pushIndex.samplerHeapIndexStride())
+                            .samplerHeapArrayStride(pushIndex.samplerHeapArrayStride())
                     );
                     case VulkanicDescriptorMappingSourceData.IndirectIndex indirectIndex -> pSourceData.indirectIndex(i ->
-                            i
-                                    .heapOffset(indirectIndex.heapOffset())
-                                    .pushOffset(indirectIndex.pushOffset())
-                                    .addressOffset(indirectIndex.addressOffset())
-                                    .heapIndexStride(indirectIndex.heapIndexStride())
-                                    .heapArrayStride(indirectIndex.heapArrayStride())
-                                    .pEmbeddedSampler(indirectIndex.embeddedSampler().populate(VkSamplerCreateInfo.calloc(stack)))
-                                    .useCombinedImageSamplerIndex(indirectIndex.useCombinedImageSamplerIndex())
-                                    .samplerHeapOffset(indirectIndex.samplerHeapOffset())
-                                    .samplerPushOffset(indirectIndex.samplerPushOffset())
-                                    .samplerAddressOffset(indirectIndex.samplerAddressOffset())
-                                    .samplerHeapIndexStride(indirectIndex.samplerHeapIndexStride())
-                                    .samplerHeapArrayStride(indirectIndex.samplerHeapArrayStride())
+                        i
+                            .heapOffset(indirectIndex.heapOffset())
+                            .pushOffset(indirectIndex.pushOffset())
+                            .addressOffset(indirectIndex.addressOffset())
+                            .heapIndexStride(indirectIndex.heapIndexStride())
+                            .heapArrayStride(indirectIndex.heapArrayStride())
+                            .pEmbeddedSampler(indirectIndex.embeddedSampler().populate(VkSamplerCreateInfo.calloc(stack)))
+                            .useCombinedImageSamplerIndex(indirectIndex.useCombinedImageSamplerIndex())
+                            .samplerHeapOffset(indirectIndex.samplerHeapOffset())
+                            .samplerPushOffset(indirectIndex.samplerPushOffset())
+                            .samplerAddressOffset(indirectIndex.samplerAddressOffset())
+                            .samplerHeapIndexStride(indirectIndex.samplerHeapIndexStride())
+                            .samplerHeapArrayStride(indirectIndex.samplerHeapArrayStride())
                     );
                     case VulkanicDescriptorMappingSourceData.IndirectIndexArray indirectIndexArray -> pSourceData.indirectIndexArray(i ->
-                            i
-                                    .heapOffset(indirectIndexArray.heapOffset())
-                                    .pushOffset(indirectIndexArray.pushOffset())
-                                    .addressOffset(indirectIndexArray.addressOffset())
-                                    .heapIndexStride(indirectIndexArray.heapIndexStride())
-                                    .pEmbeddedSampler(indirectIndexArray.embeddedSampler().populate(VkSamplerCreateInfo.calloc(stack)))
-                                    .useCombinedImageSamplerIndex(indirectIndexArray.useCombinedImageSamplerIndex())
-                                    .samplerHeapOffset(indirectIndexArray.samplerHeapOffset())
-                                    .samplerPushOffset(indirectIndexArray.samplerPushOffset())
-                                    .samplerAddressOffset(indirectIndexArray.samplerAddressOffset())
-                                    .samplerHeapIndexStride(indirectIndexArray.samplerHeapIndexStride())
+                        i
+                            .heapOffset(indirectIndexArray.heapOffset())
+                            .pushOffset(indirectIndexArray.pushOffset())
+                            .addressOffset(indirectIndexArray.addressOffset())
+                            .heapIndexStride(indirectIndexArray.heapIndexStride())
+                            .pEmbeddedSampler(indirectIndexArray.embeddedSampler().populate(VkSamplerCreateInfo.calloc(stack)))
+                            .useCombinedImageSamplerIndex(indirectIndexArray.useCombinedImageSamplerIndex())
+                            .samplerHeapOffset(indirectIndexArray.samplerHeapOffset())
+                            .samplerPushOffset(indirectIndexArray.samplerPushOffset())
+                            .samplerAddressOffset(indirectIndexArray.samplerAddressOffset())
+                            .samplerHeapIndexStride(indirectIndexArray.samplerHeapIndexStride())
                     );
                     case VulkanicDescriptorMappingSourceData.HeapData heapData -> pSourceData.heapData(h ->
-                            h
-                                    .heapOffset(heapData.heapOffset())
-                                    .pushOffset(heapData.pushOffset())
+                        h
+                            .heapOffset(heapData.heapOffset())
+                            .pushOffset(heapData.pushOffset())
                     );
                     case VulkanicDescriptorMappingSourceData.PushDataOffset pushDataOffset -> pSourceData.pushDataOffset(pushDataOffset.value());
                     case VulkanicDescriptorMappingSourceData.PushAddressOffset pushAddressOffset -> pSourceData.pushAddressOffset(pushAddressOffset.value());
                     case VulkanicDescriptorMappingSourceData.IndirectAddress indirectAddress -> pSourceData.indirectAddress(i ->
-                            i
-                                    .pushOffset(indirectAddress.pushOffset())
-                                    .addressOffset(indirectAddress.addressOffset())
+                        i
+                            .pushOffset(indirectAddress.pushOffset())
+                            .addressOffset(indirectAddress.addressOffset())
                     );
                     case VulkanicDescriptorMappingSourceData.ShaderRecordIndex shaderRecordIndex -> pSourceData.shaderRecordIndex(s ->
-                            s
-                                    .heapOffset(shaderRecordIndex.heapOffset())
-                                    .shaderRecordOffset(shaderRecordIndex.shaderRecordOffset())
-                                    .heapIndexStride(shaderRecordIndex.heapIndexStride())
-                                    .heapArrayStride(shaderRecordIndex.heapArrayStride())
-                                    .pEmbeddedSampler(shaderRecordIndex.embeddedSampler().populate(VkSamplerCreateInfo.calloc(stack)))
-                                    .useCombinedImageSamplerIndex(shaderRecordIndex.useCombinedImageSamplerIndex())
-                                    .samplerHeapOffset(shaderRecordIndex.samplerHeapOffset())
-                                    .samplerShaderRecordOffset(shaderRecordIndex.samplerShaderRecordOffset())
-                                    .samplerHeapIndexStride(shaderRecordIndex.samplerHeapIndexStride())
-                                    .samplerHeapArrayStride(shaderRecordIndex.samplerHeapArrayStride())
+                        s
+                            .heapOffset(shaderRecordIndex.heapOffset())
+                            .shaderRecordOffset(shaderRecordIndex.shaderRecordOffset())
+                            .heapIndexStride(shaderRecordIndex.heapIndexStride())
+                            .heapArrayStride(shaderRecordIndex.heapArrayStride())
+                            .pEmbeddedSampler(shaderRecordIndex.embeddedSampler().populate(VkSamplerCreateInfo.calloc(stack)))
+                            .useCombinedImageSamplerIndex(shaderRecordIndex.useCombinedImageSamplerIndex())
+                            .samplerHeapOffset(shaderRecordIndex.samplerHeapOffset())
+                            .samplerShaderRecordOffset(shaderRecordIndex.samplerShaderRecordOffset())
+                            .samplerHeapIndexStride(shaderRecordIndex.samplerHeapIndexStride())
+                            .samplerHeapArrayStride(shaderRecordIndex.samplerHeapArrayStride())
                     );
                     case VulkanicDescriptorMappingSourceData.ShaderRecordDataOffset shaderRecordDataOffset -> pSourceData.shaderRecordDataOffset(shaderRecordDataOffset.value());
                     case VulkanicDescriptorMappingSourceData.ShaderRecordAddressOffset shaderRecordAddressOffset -> pSourceData.shaderRecordAddressOffset(shaderRecordAddressOffset.value());
                 }
 
                 pNext = VkDescriptorSetAndBindingMappingEXT.calloc(stack)
-                        .sType$Default()
-                        .descriptorSet(descriptorSetAndBindingMapping.descriptorSet())
-                        .firstBinding(descriptorSetAndBindingMapping.firstBinding())
-                        .bindingCount(descriptorSetAndBindingMapping.bindingCount())
-                        .resourceMask(descriptorSetAndBindingMapping.resourceMask().mask())
-                        .source(descriptorSetAndBindingMapping.source().qualifier())
-                        .sourceData(pSourceData)
+                    .sType$Default()
+                    .descriptorSet(descriptorSetAndBindingMapping.descriptorSet())
+                    .firstBinding(descriptorSetAndBindingMapping.firstBinding())
+                    .bindingCount(descriptorSetAndBindingMapping.bindingCount())
+                    .resourceMask(descriptorSetAndBindingMapping.resourceMask().mask())
+                    .source(descriptorSetAndBindingMapping.source().qualifier())
+                    .sourceData(pSourceData)
                     .pNext(pNext)
-                        .address();
+                    .address();
             }
 
             LongBuffer pPipeline = stack.callocLong(1);
             VkGraphicsPipelineCreateInfo.Buffer createInfo = VkGraphicsPipelineCreateInfo.calloc(1, stack)
-                    .sType$Default()
-                    .pStages(shaderStages)
-                    .pVertexInputState(vertexInputState != null ? vertexInputState.build(stack) : null)
-                    .pInputAssemblyState(inputAssemblyState != null ? inputAssemblyState.build(stack) : null)
-                    .pViewportState(viewportState != null ? viewportState.build(stack) : null)
-                    .pRasterizationState(rasterizationState != null ? rasterizationState.build(stack) : null)
-                    .pMultisampleState(multisampleState != null ? multisampleState.build(stack) : null)
-                    .pDepthStencilState(depthStencilState != null ? depthStencilState.build(stack) : null)
-                    .pColorBlendState(colorBlendState != null ? colorBlendState.build(stack) : null)
-                    .pDynamicState(dynamicState != null ? dynamicState.build(stack) : null)
+                .sType$Default()
+                .pStages(shaderStages)
+                .pVertexInputState(vertexInputState != null ? vertexInputState.build(stack) : null)
+                .pInputAssemblyState(inputAssemblyState != null ? inputAssemblyState.build(stack) : null)
+                .pViewportState(viewportState != null ? viewportState.build(stack) : null)
+                .pRasterizationState(rasterizationState != null ? rasterizationState.build(stack) : null)
+                .pMultisampleState(multisampleState != null ? multisampleState.build(stack) : null)
+                .pDepthStencilState(depthStencilState != null ? depthStencilState.build(stack) : null)
+                .pColorBlendState(colorBlendState != null ? colorBlendState.build(stack) : null)
+                .pDynamicState(dynamicState != null ? dynamicState.build(stack) : null)
                 .layout(layout != null ? layout.handle() : VK10.VK_NULL_HANDLE)
-                    .renderPass(renderPass != null ? renderPass.handle() : VK10.VK_NULL_HANDLE)
-                    .subpass(subpass)
-                    .basePipelineHandle(VK10.VK_NULL_HANDLE)
-                    .basePipelineIndex(-1)
-                    .pNext(pNext);
+                .renderPass(renderPass != null ? renderPass.handle() : VK10.VK_NULL_HANDLE)
+                .subpass(subpass)
+                .basePipelineHandle(VK10.VK_NULL_HANDLE)
+                .basePipelineIndex(-1)
+                .pNext(pNext);
 
             VkUtil.check(VK10.vkCreateGraphicsPipelines(handle, pipelineCache != null ? pipelineCache.handle() : VK10.VK_NULL_HANDLE, createInfo, null, pPipeline));
 
@@ -825,57 +825,57 @@ public class VulkanicDevice implements AutoCloseable {
     }
 
     public @NotNull VulkanicSwapchain createSwapchain(
-            @NotNull EnumIntBitset<VulkanicSwapchainCreateFlag> flags,
-            @NotNull VulkanicSurface surface, int minImageCount,
-            @NotNull VulkanicFormat imageFormat, @NotNull VulkanicColorSpace imageColorSpace,
-            int width, int height, int imageArrayLayers,
-            @NotNull EnumIntBitset<VulkanicImageUsageFlag> imageUsage,
-            @NotNull VulkanicSharingMode imageSharingMode,
-            int queueFamilyIndexCount, int @Nullable [] queueFamilyIndices,
-            @NotNull VulkanicSurfaceTransformFlag preTransform, @NotNull VulkanicCompositeAlphaFlag compositeAlpha,
-            @NotNull VulkanicPresentMode presentMode, boolean clipped
+        @NotNull EnumIntBitset<VulkanicSwapchainCreateFlag> flags,
+        @NotNull VulkanicSurface surface, int minImageCount,
+        @NotNull VulkanicFormat imageFormat, @NotNull VulkanicColorSpace imageColorSpace,
+        int width, int height, int imageArrayLayers,
+        @NotNull EnumIntBitset<VulkanicImageUsageFlag> imageUsage,
+        @NotNull VulkanicSharingMode imageSharingMode,
+        int queueFamilyIndexCount, int @Nullable [] queueFamilyIndices,
+        @NotNull VulkanicSurfaceTransformFlag preTransform, @NotNull VulkanicCompositeAlphaFlag compositeAlpha,
+        @NotNull VulkanicPresentMode presentMode, boolean clipped
     ) throws VulkanException {
         return createSwapchain(flags, surface, minImageCount, imageFormat, imageColorSpace, width, height, imageArrayLayers, imageUsage, imageSharingMode, queueFamilyIndexCount, queueFamilyIndices, preTransform, compositeAlpha, presentMode, clipped, null);
     }
 
     public @NotNull VulkanicSwapchain createSwapchain(
-            @NotNull EnumIntBitset<VulkanicSwapchainCreateFlag> flags,
-            @NotNull VulkanicSurface surface, int minImageCount,
-            @NotNull VulkanicFormat imageFormat, @NotNull VulkanicColorSpace imageColorSpace,
-            int width, int height, int imageArrayLayers,
-            @NotNull EnumIntBitset<VulkanicImageUsageFlag> imageUsage,
-            @NotNull VulkanicSharingMode imageSharingMode,
-            int queueFamilyIndexCount, int @Nullable [] queueFamilyIndices,
-            @NotNull VulkanicSurfaceTransformFlag preTransform, @NotNull VulkanicCompositeAlphaFlag compositeAlpha,
-            @NotNull VulkanicPresentMode presentMode, boolean clipped,
-            @Nullable VulkanicSwapchain oldSwapchain
+        @NotNull EnumIntBitset<VulkanicSwapchainCreateFlag> flags,
+        @NotNull VulkanicSurface surface, int minImageCount,
+        @NotNull VulkanicFormat imageFormat, @NotNull VulkanicColorSpace imageColorSpace,
+        int width, int height, int imageArrayLayers,
+        @NotNull EnumIntBitset<VulkanicImageUsageFlag> imageUsage,
+        @NotNull VulkanicSharingMode imageSharingMode,
+        int queueFamilyIndexCount, int @Nullable [] queueFamilyIndices,
+        @NotNull VulkanicSurfaceTransformFlag preTransform, @NotNull VulkanicCompositeAlphaFlag compositeAlpha,
+        @NotNull VulkanicPresentMode presentMode, boolean clipped,
+        @Nullable VulkanicSwapchain oldSwapchain
     ) throws VulkanException {
         if (!enabledExtensions.contains(KHRSwapchain.VK_KHR_SWAPCHAIN_EXTENSION_NAME)) throw new UnsupportedOperationException("VulkanicDevice#createSwapchain requires a VK_KHR_swapchain");
         try (MemoryStack stack = MemoryStack.stackPush()) {
             LongBuffer pSwapchain = stack.callocLong(1);
             VkSwapchainCreateInfoKHR swapchainCreateInfoKHR = VkSwapchainCreateInfoKHR.calloc(stack)
-                    .sType$Default()
-                    .flags(flags.mask())
-                    .surface(surface.handle())
-                    .minImageCount(minImageCount)
-                    .imageFormat(imageFormat.qualifier())
-                    .imageColorSpace(imageColorSpace.qualifier())
-                    .imageExtent(ex -> ex.set(width, height))
-                    .imageArrayLayers(imageArrayLayers)
-                    .imageUsage(imageUsage.mask())
-                    .imageSharingMode(imageSharingMode.qualifier())
-                    .queueFamilyIndexCount(queueFamilyIndexCount)
-                    .pQueueFamilyIndices(queueFamilyIndices != null ? stack.ints(queueFamilyIndices) : null)
-                    .preTransform(preTransform.flag())
-                    .compositeAlpha(compositeAlpha.flag())
-                    .presentMode(presentMode.qualifier())
-                    .clipped(clipped)
-                    .oldSwapchain(oldSwapchain != null ? oldSwapchain.handle() : 0);
+                .sType$Default()
+                .flags(flags.mask())
+                .surface(surface.handle())
+                .minImageCount(minImageCount)
+                .imageFormat(imageFormat.qualifier())
+                .imageColorSpace(imageColorSpace.qualifier())
+                .imageExtent(ex -> ex.set(width, height))
+                .imageArrayLayers(imageArrayLayers)
+                .imageUsage(imageUsage.mask())
+                .imageSharingMode(imageSharingMode.qualifier())
+                .queueFamilyIndexCount(queueFamilyIndexCount)
+                .pQueueFamilyIndices(queueFamilyIndices != null ? stack.ints(queueFamilyIndices) : null)
+                .preTransform(preTransform.flag())
+                .compositeAlpha(compositeAlpha.flag())
+                .presentMode(presentMode.qualifier())
+                .clipped(clipped)
+                .oldSwapchain(oldSwapchain != null ? oldSwapchain.handle() : 0);
             VulkanicResult result = VulkanicResult.valueOf(KHRSwapchain.vkCreateSwapchainKHR(this.handle, swapchainCreateInfoKHR, null, pSwapchain));
             if (!result.success()) throw new VulkanException(result);
             return new VulkanicSwapchain(
-                    this, pSwapchain.get(0),
-                    imageFormat, new Vector3i(width, height, 1), imageUsage
+                this, pSwapchain.get(0),
+                imageFormat, new Vector3i(width, height, 1), imageUsage
             );
         }
     }
@@ -887,17 +887,17 @@ public class VulkanicDevice implements AutoCloseable {
     public @NotNull VulkanicSampler createSampler(VulkanicSamplerCreateInfo createInfo) {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             VkSamplerCreateInfo samplerCreateInfo = VkSamplerCreateInfo.calloc(stack)
-                    .sType$Default()
-                    .flags(createInfo.flags().mask())
-                    .magFilter(createInfo.magFilter().qualifier()).minFilter(createInfo.minFilter().qualifier())
-                    .mipmapMode(createInfo.mipmapMode().qualifier())
-                    .addressModeU(createInfo.addressModeU().qualifier()).addressModeV(createInfo.addressModeV().qualifier()).addressModeW(createInfo.addressModeW().qualifier())
-                    .mipLodBias(createInfo.mipLodBias())
-                    .anisotropyEnable(createInfo.anisotropyEnable()).maxAnisotropy(createInfo.maxAnisotropy())
-                    .compareEnable(createInfo.compareEnable()).compareOp(createInfo.compareOp() != null ? createInfo.compareOp().qualifier() : 0)
-                    .minLod(createInfo.minLod()).maxLod(createInfo.maxLod())
-                    .borderColor(createInfo.borderColor() != null ? createInfo.borderColor().qualifier() : 0)
-                    .unnormalizedCoordinates(createInfo.unnormalizedCoordinates());
+                .sType$Default()
+                .flags(createInfo.flags().mask())
+                .magFilter(createInfo.magFilter().qualifier()).minFilter(createInfo.minFilter().qualifier())
+                .mipmapMode(createInfo.mipmapMode().qualifier())
+                .addressModeU(createInfo.addressModeU().qualifier()).addressModeV(createInfo.addressModeV().qualifier()).addressModeW(createInfo.addressModeW().qualifier())
+                .mipLodBias(createInfo.mipLodBias())
+                .anisotropyEnable(createInfo.anisotropyEnable()).maxAnisotropy(createInfo.maxAnisotropy())
+                .compareEnable(createInfo.compareEnable()).compareOp(createInfo.compareOp() != null ? createInfo.compareOp().qualifier() : 0)
+                .minLod(createInfo.minLod()).maxLod(createInfo.maxLod())
+                .borderColor(createInfo.borderColor() != null ? createInfo.borderColor().qualifier() : 0)
+                .unnormalizedCoordinates(createInfo.unnormalizedCoordinates());
 
             LongBuffer pSampler = stack.callocLong(1);
             VK10.vkCreateSampler(this.handle, samplerCreateInfo, null, pSampler);
@@ -913,11 +913,11 @@ public class VulkanicDevice implements AutoCloseable {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             LongBuffer pQueryPool = stack.callocLong(1);
             VkQueryPoolCreateInfo pQueryPoolCreateInfo = VkQueryPoolCreateInfo.calloc(stack)
-                    .sType$Default()
-                    .flags(flags.mask())
-                    .queryType(type.qualifier())
-                    .queryCount(queryCount)
-                    .pipelineStatistics(pipelineStatistics.mask());
+                .sType$Default()
+                .flags(flags.mask())
+                .queryType(type.qualifier())
+                .queryCount(queryCount)
+                .pipelineStatistics(pipelineStatistics.mask());
 
             VK10.vkCreateQueryPool(this.handle, pQueryPoolCreateInfo, null, pQueryPool);
             return new VulkanicQueryPool(this, pQueryPool.get(0), queryCount);
@@ -957,32 +957,32 @@ public class VulkanicDevice implements AutoCloseable {
                 VkResourceDescriptorDataEXT pData = VkResourceDescriptorDataEXT.calloc(stack);
                 switch (info.data()) {
                     case VulkanicResourceDescriptorData.Image image -> pData.pImage(VkImageDescriptorInfoEXT.calloc(stack)
+                        .sType$Default()
+                        .pView(VkImageViewCreateInfo.calloc()
                             .sType$Default()
-                            .pView(VkImageViewCreateInfo.calloc()
-                                    .sType$Default()
-                                    .viewType(image.view().viewType().qualifier())
-                                    .format(image.view().format().qualifier())
-                                    .components(mapping -> mapping.set(image.view().componentMapping().r().qualifier(), image.view().componentMapping().g().qualifier(), image.view().componentMapping().b().qualifier(), image.view().componentMapping().a().qualifier()))
-                                    .subresourceRange(subresource -> subresource.set(image.view().subresourceRange().aspectMask().mask(), image.view().subresourceRange().baseMipLevel(), image.view().subresourceRange().levelCount(), image.view().subresourceRange().baseArrayLayer(), image.view().subresourceRange().layerCount()))
-                            )
-                            .layout(image.layout().qualifier())
+                            .viewType(image.view().viewType().qualifier())
+                            .format(image.view().format().qualifier())
+                            .components(mapping -> mapping.set(image.view().componentMapping().r().qualifier(), image.view().componentMapping().g().qualifier(), image.view().componentMapping().b().qualifier(), image.view().componentMapping().a().qualifier()))
+                            .subresourceRange(subresource -> subresource.set(image.view().subresourceRange().aspectMask().mask(), image.view().subresourceRange().baseMipLevel(), image.view().subresourceRange().levelCount(), image.view().subresourceRange().baseArrayLayer(), image.view().subresourceRange().layerCount()))
+                        )
+                        .layout(image.layout().qualifier())
                     );
                     case VulkanicResourceDescriptorData.TexelBuffer texelBuffer -> pData.pTexelBuffer(VkTexelBufferDescriptorInfoEXT.calloc(stack)
-                            .sType$Default()
-                            .format(texelBuffer.format().qualifier())
-                            .addressRange(range -> range.address$(texelBuffer.addressRange().address()).size(texelBuffer.addressRange().size().bytes()))
+                        .sType$Default()
+                        .format(texelBuffer.format().qualifier())
+                        .addressRange(range -> range.address$(texelBuffer.addressRange().address()).size(texelBuffer.addressRange().size().bytes()))
                     );
                     case VulkanicDeviceAddressRange deviceAddressRange -> pData.pAddressRange(VkDeviceAddressRangeEXT.calloc(stack)
-                            .address$(deviceAddressRange.address())
-                            .size(deviceAddressRange.size().bytes())
+                        .address$(deviceAddressRange.address())
+                        .size(deviceAddressRange.size().bytes())
                     );
                     case VulkanicResourceDescriptorData.TensorViewCreateInfo _ -> pData.pTensorARM(VkTensorViewCreateInfoARM.calloc(stack).sType$Default()); // TODO
                 }
 
                 pResources.get(i)
-                        .sType$Default()
-                        .type(info.type().qualifier())
-                        .data(pData);
+                    .sType$Default()
+                    .type(info.type().qualifier())
+                    .data(pData);
             }
             VkHostAddressRangeEXT.Buffer pDescriptors = VkHostAddressRangeEXT.calloc(descriptors.size(), stack);
             for (int i = 0; i < descriptors.size(); i++) {
@@ -1082,9 +1082,9 @@ public class VulkanicDevice implements AutoCloseable {
     }
 
     public @NotNull CompletableFuture<Void> submitTransient(
-            @NotNull VulkanicCommandPool pool,
-            @NotNull VulkanicQueue queue,
-            @NotNull Consumer<VulkanicCommandBuffer> usage
+        @NotNull VulkanicCommandPool pool,
+        @NotNull VulkanicQueue queue,
+        @NotNull Consumer<VulkanicCommandBuffer> usage
     ) {
         CompletableFuture<Void> future = new CompletableFuture<>();
 
