@@ -29,6 +29,8 @@ public class VulkanicSwapchain implements AutoCloseable {
 
     private final List<VulkanicImage> images;
 
+    /// @see VulkanicDevice#createSwapchain 
+    @ApiStatus.Internal
     public VulkanicSwapchain(
             @NotNull VulkanicDevice device, long handle,
             @NotNull VulkanicFormat imageFormat, @NotNull Vector3ic imageExtent, @NotNull EnumIntBitset<VulkanicImageUsageFlag> imageUsage

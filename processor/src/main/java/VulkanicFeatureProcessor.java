@@ -1,5 +1,6 @@
 import com.google.auto.service.AutoService;
 import com.palantir.javapoet.*;
+import net.flamgop.vulkanic.annotations.VulkanExtension;
 import net.flamgop.vulkanic.annotations.VulkanFeature;
 
 import javax.annotation.processing.*;
@@ -13,7 +14,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @AutoService(Processor.class)
-@SupportedAnnotationTypes("net.flamgop.vulkanic.annotations.VulkanFeature")
+@SupportedAnnotationTypes({"net.flamgop.vulkanic.annotations.VulkanFeature", "net.flamgop.vulkanic.annotations.VulkanExtension"})
 @SupportedSourceVersion(SourceVersion.RELEASE_25)
 public class VulkanicFeatureProcessor extends AbstractProcessor {
     @Override
@@ -41,43 +42,11 @@ public class VulkanicFeatureProcessor extends AbstractProcessor {
                 .build());
 
         for (Element element : roundEnv.getElementsAnnotatedWith(VulkanFeature.class)) {
-            String name = element.getSimpleName().toString();
-            baseClass.addField(FieldSpec.builder(boolean.class, name)
-                    .addModifiers(Modifier.PROTECTED)
-                    .initializer("false")
-                    .build());
+            processVulkanFeature(element, baseClass, targetClass);
+        }
 
-            VulkanFeature anno = element.getAnnotation(VulkanFeature.class);
-            TypeName structType = getStructTypeName(element);
-
-            MethodSpec.Builder enabler = MethodSpec.methodBuilder(name)
-                    .addModifiers(Modifier.PUBLIC)
-                    .returns(targetClass)
-                    .addStatement("this.$L = true", name);
-
-            if (!anno.extension().isEmpty()) {
-                enabler.addStatement("this.extensions.add($L)", "\"" + anno.extension() + "\"");
-            }
-
-            if (structType.toString().equals("org.lwjgl.vulkan.VkPhysicalDeviceFeatures2")) {
-                enabler.addStatement("$L features = getChainedPNext($L.class)", structType, structType);
-                if (!anno.setter().equals("$$SPECIAL_IGNORE$$")) enabler.addStatement("features.features().$L(true)", name);
-                enabler.addStatement("return ($T)this", targetClass);
-            } else {
-                enabler.addStatement("$L features = getChainedPNext($L.class)", structType, structType);
-                if (!anno.setter().equals("$$SPECIAL_IGNORE$$")) enabler.addStatement("features.$L(true)", name);
-                enabler.addStatement("return ($T)this", targetClass);
-            }
-
-            baseClass.addMethod(enabler.build());
-
-            MethodSpec getter = MethodSpec.methodBuilder("supports" + capitalize(name))
-                    .addModifiers(Modifier.PUBLIC)
-                    .returns(boolean.class)
-                    .addStatement("return this.$L", name)
-                    .build();
-
-            baseClass.addMethod(getter);
+        for (Element element : roundEnv.getElementsAnnotatedWith(VulkanExtension.class)) {
+            processVulkanExtension(element, baseClass, targetClass);
         }
 
         try {
@@ -91,6 +60,59 @@ public class VulkanicFeatureProcessor extends AbstractProcessor {
         }
 
         return true;
+    }
+
+    private void processVulkanFeature(Element element, TypeSpec.Builder baseClass, ClassName targetClass) {
+        String name = element.getSimpleName().toString();
+        baseClass.addField(FieldSpec.builder(boolean.class, name)
+                .addModifiers(Modifier.PROTECTED)
+                .initializer("false")
+                .build());
+
+        VulkanFeature anno = element.getAnnotation(VulkanFeature.class);
+        TypeName structType = getStructTypeName(element);
+
+        MethodSpec.Builder enabler = MethodSpec.methodBuilder(name)
+                .addModifiers(Modifier.PUBLIC)
+                .returns(targetClass)
+                .addStatement("this.$L = true", name);
+
+        if (!anno.extension().isEmpty()) {
+            enabler.addStatement("this.extensions.add($L)", "\"" + anno.extension() + "\"");
+        }
+
+        if (structType.toString().equals("org.lwjgl.vulkan.VkPhysicalDeviceFeatures2")) {
+            enabler.addStatement("$L features = getChainedPNext($L.class)", structType, structType);
+            if (!anno.setter().equals("$$SPECIAL_IGNORE$$")) enabler.addStatement("features.features().$L(true)", name);
+            enabler.addStatement("return ($T)this", targetClass);
+        } else {
+            enabler.addStatement("$L features = getChainedPNext($L.class)", structType, structType);
+            if (!anno.setter().equals("$$SPECIAL_IGNORE$$")) enabler.addStatement("features.$L(true)", name);
+            enabler.addStatement("return ($T)this", targetClass);
+        }
+
+        baseClass.addMethod(enabler.build());
+
+        MethodSpec getter = MethodSpec.methodBuilder("supports" + capitalize(name))
+                .addModifiers(Modifier.PUBLIC)
+                .returns(boolean.class)
+                .addStatement("return this.$L", name)
+                .build();
+
+        baseClass.addMethod(getter);
+    }
+
+    private void processVulkanExtension(Element element, TypeSpec.Builder baseClass, ClassName targetClass) {
+        String name = element.getSimpleName().toString();
+        VulkanExtension anno = element.getAnnotation(VulkanExtension.class);
+
+        MethodSpec.Builder enabler = MethodSpec.methodBuilder(name)
+                .addModifiers(Modifier.PUBLIC)
+                .returns(targetClass)
+                .addStatement("this.extensions.add($S)", anno.value())
+                .addStatement("return ($T)this", targetClass);
+
+        baseClass.addMethod(enabler.build());
     }
 
     private String capitalize(String str) {
