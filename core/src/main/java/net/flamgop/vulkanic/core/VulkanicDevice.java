@@ -32,6 +32,7 @@ import net.flamgop.vulkanic.swapchain.VulkanicCompositeAlphaFlag;
 import net.flamgop.vulkanic.swapchain.VulkanicPresentMode;
 import net.flamgop.vulkanic.swapchain.VulkanicSurfaceTransformFlag;
 import net.flamgop.vulkanic.swapchain.VulkanicSwapchain;
+import net.flamgop.vulkanic.swapchain.VulkanicSwapchainCreateFlag;
 import net.flamgop.vulkanic.sync.VulkanicFence;
 import net.flamgop.vulkanic.sync.VulkanicFenceCreateFlag;
 import net.flamgop.vulkanic.sync.VulkanicQueryPipelineStatisticFlag;
@@ -785,7 +786,6 @@ public class VulkanicDevice implements AutoCloseable {
                     .pNext(pNext)
                         .address();
             }
-            ;
 
             LongBuffer pPipeline = stack.callocLong(1);
             VkGraphicsPipelineCreateInfo.Buffer createInfo = VkGraphicsPipelineCreateInfo.calloc(1, stack)
