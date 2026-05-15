@@ -5,14 +5,14 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-public final class VulkanicComputePipeline implements VulkanicPipeline {
+public class VulkanicPipelineCache implements AutoCloseable {
 
     private final VulkanicDevice device;
     private final long handle;
 
-    /// @see VulkanicDevice#createComputePipeline
+    /// @see VulkanicDevice#createPipelineCache
     @ApiStatus.Internal
-    public VulkanicComputePipeline(@NotNull VulkanicDevice device, long handle) {
+    public VulkanicPipelineCache(@NotNull VulkanicDevice device, long handle) {
         this.device = device;
         this.handle = handle;
     }
@@ -25,6 +25,6 @@ public final class VulkanicComputePipeline implements VulkanicPipeline {
 
     @Override
     public void close() {
-        device.destroyPipeline(this);
+        device.destroyPipelineCache(this);
     }
 }

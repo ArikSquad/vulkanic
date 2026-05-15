@@ -64,8 +64,8 @@ public final class VulkanicDeviceSize implements Comparable<VulkanicDeviceSize>,
 
     @Override
     public String toString() {
-        if (bytes == 0) return "0 B";
-        if (bytes < 1000) return bytes + " B";
+        if (bytes == 0) return "0B";
+        if (bytes < 1000) return bytes + "B";
 
         final long[] values = {
                 1_000_000_000_000_000L,
